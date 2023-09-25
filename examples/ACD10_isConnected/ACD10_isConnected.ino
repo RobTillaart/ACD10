@@ -1,5 +1,5 @@
 //
-//    FILE: ACD10_demo.ino
+//    FILE: ACD10_isConnected.ino
 //  AUTHOR: Rob Tillaart
 // PUPROSE: test basic behaviour and performance
 
@@ -21,13 +21,13 @@ void setup()
 
   Wire.begin();
   ACD.begin();
-  
 }
 
 
 void loop()
 {
-
+  Serial.println(ACD.isConnected());
+  delay(1000);
 }
 
 
