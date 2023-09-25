@@ -1,0 +1,14 @@
+# Syntax Colouring Map For ACD10
+
+# Data types (KEYWORD1)
+ACD10	KEYWORD1
+
+
+# Methods and Functions (KEYWORD2)
+read	KEYWORD2
+
+
+# Constants (LITERAL1)
+ACD10_LIB_VERSION	LITERAL1
+
+
