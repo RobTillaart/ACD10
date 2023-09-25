@@ -11,10 +11,11 @@
 #include "ACD10.h"
 
 
-ACD10::ACD10(uint8_t address, uint8_t psi, TwoWire *wire)
+ACD10::ACD10(uint8_t address, TwoWire *wire)
 {
   _address = address;
   _wire    = wire;
+  _error   = 0;
 }
 
 
@@ -33,7 +34,6 @@ bool ACD10::begin(uint8_t sda, uint8_t scl)
 
 bool ACD10::begin()
 {
-  reset();
   _wire->begin();
   if (! isConnected())
   {
@@ -43,18 +43,17 @@ bool ACD10::begin()
 }
 
 
-uint8_t ACD10::getAddress()
-{
-  return _address;
-}
-
-
 bool ACD10::isConnected()
 {
   _wire->beginTransmission(_address);
   return (_wire->endTransmission() == 0);
 }
 
+
+uint8_t ACD10::getAddress()
+{
+  return _address;
+}
 
 
 uint8_t ACD10::getLastError()
@@ -71,8 +70,14 @@ uint8_t ACD10::getLastError()
 //  PRIVATE
 //
 
+uint8_t ACD10::writeReg(uint8_t reg, uint8_t value)
+{
+  return 0;
+}
 
-
-
+uint8_t ACD10::readReg(uint8_t reg)
+{
+  return 0;
+}
 
 //  -- END OF FILE --

@@ -42,6 +42,16 @@ TODO: Test on Arduino UNO and ESP32?
 TODO
 
 
+## I2C
+
+Address = 0x2A
+
+Does it support other addresses?
+
+include section about I2C multiplexer, multi devices.
+
+
+
 ## Interface
 
 ```cpp

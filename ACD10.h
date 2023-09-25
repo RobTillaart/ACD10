@@ -14,21 +14,22 @@
 
 
 #define ACD10_LIB_VERSION         (F("0.1.0"))
+#define ACD10_DEFAULT_ADDRESS     0x2A
 
 class ACD10
 {
 public:
-  explicit ACD10(const uint8_t deviceAddress, TwoWire *wire = &Wire);
+  ACD10(uint8_t address = ACD10_DEFAULT_ADDRESS, TwoWire *wire = &Wire);
 
 #if defined (ESP8266) || defined(ESP32)
-  bool     begin(int sda, int scl);
+  bool     begin(uint8_t sda, uint8_t scl);
 #endif
   bool     begin();
   bool     isConnected();
 
   uint8_t  getAddress();
 
-  int      read();
+  //  int      read();
 
 
   //  ERROR

@@ -42,7 +42,7 @@ unittest_teardown()
 
 unittest(test_constants)
 {
-  assertEqual(251, 251);
+  assertEqual(ACD10_DEFAULT_ADDRESS, 0x2A);
 }
 
 

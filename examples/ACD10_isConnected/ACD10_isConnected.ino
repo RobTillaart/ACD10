@@ -8,7 +8,7 @@
 #include "ACD10.h"
 
 
-ACD10 ACD;
+ACD10 mySensor(0x2A);
 
 
 void setup()
@@ -20,13 +20,14 @@ void setup()
   Serial.println(ACD10_LIB_VERSION);
 
   Wire.begin();
-  ACD.begin();
+  mySensor.begin();
 }
 
 
 void loop()
 {
-  Serial.println(ACD.isConnected());
+  Serial.println(mySensor.isConnected());
+  Serial.println(mySensor.getAddress());
   delay(1000);
 }
 
