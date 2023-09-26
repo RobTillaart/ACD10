@@ -33,6 +33,11 @@ public:
   bool     preHeatDone();
   uint32_t preHeatMillisLeft();
 
+  bool     readSensor();
+  uint32_t getCO2Concentration();
+  uint16_t getTemperature();
+  uint32_t lastRead();
+
 
   //  CALIBRATION
 
@@ -40,8 +45,8 @@ public:
   //  MISC
   void     factoryReset();
   bool     readFactorySet();
-  uint32_t readFirmwareVersion();   //  TODO
-  uint32_t readSensorCode();        //  TODO
+  void     readFirmwareVersion(char * arr);  //  should have length 11++
+  void     readSensorCode(char * arr);       //  should have length 11++
 
 
   //  DEBUG
@@ -57,6 +62,7 @@ private:
   uint8_t  _crc8(uint8_t * arr, uint8_t size);
 
   uint32_t _start = 0;
+  uint32_t _lastRead = 0;
   uint32_t _concentration = 0;
   uint16_t _temperature   = 0;
 

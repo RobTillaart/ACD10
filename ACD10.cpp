@@ -75,6 +75,47 @@ uint32_t ACD10::preHeatMillisLeft()
 }
 
 
+bool ACD10::readSensor()
+{
+  uint8_t buf[10] = { 0x03, 0x00 };
+  _command(buf, 2);
+  _request(buf, 9);
+
+  //  TODO CRC CHECK?
+  _concentration   = buf[0];
+  _concentration <<= 8;
+  _concentration  += buf[1];
+  _concentration <<= 8;
+  _concentration  += buf[3];
+  _concentration <<= 8;
+  _concentration  += buf[4];
+
+  //  TODO CRC CHECK?
+  _temperature = buf[6] * 256 + buf[7];
+  _lastRead = millis();
+
+  return true;
+}
+
+
+uint32_t ACD10::getCO2Concentration()
+{
+  return _concentration;
+}
+
+
+uint16_t ACD10::getTemperature()
+{
+  return _temperature;
+}
+
+
+uint32_t ACD10::lastRead()
+{
+  return _lastRead;
+}
+
+
 
 /////////////////////////////////////////////
 //
@@ -89,14 +130,14 @@ uint32_t ACD10::preHeatMillisLeft()
 //
 void ACD10::factoryReset()
 {
-  uint8_t buf[10] = { 0x52, 0x02, 0x00};
+  uint8_t buf[4] = { 0x52, 0x02, 0x00};
   _command(buf, 3);
 }
 
 
 bool ACD10::readFactorySet()
 {
-  uint8_t buf[10] = { 0x52, 0x02 };
+  uint8_t buf[4] = { 0x52, 0x02 };
   _command(buf, 2);
   _request(buf, 3);
 
@@ -104,37 +145,21 @@ bool ACD10::readFactorySet()
 }
 
 
-uint32_t ACD10::readFirmwareVersion()
+void ACD10::readFirmwareVersion(char * arr)
 {
-  uint8_t buf[10] = { 0xD1, 0x00 };
+  uint8_t buf[2] = { 0xD1, 0x00 };
   _command(buf, 2);
-  _request(buf, 10);
-
-  //  what does FWV look like?
-  for (int i = 0; i < 10; i++)
-  {
-    if (buf[i] < 0x10) Serial.println("0");
-    Serial.print(buf[i], HEX);
-  }
-  Serial.println();
-  return 0;
+  _request((uint8_t *) arr, 10);
+  arr[10] = '\0';
 }
 
 
-uint32_t ACD10::readSensorCode()
+void ACD10::readSensorCode(char * arr)
 {
-  uint8_t buf[10] = { 0xD2, 0x01 };
+  uint8_t buf[2] = { 0xD2, 0x01 };
   _command(buf, 2);
-  _request(buf, 10);
-
-  //  what does it look like?
-  for (int i = 0; i < 10; i++)
-  {
-    if (buf[i] < 0x10) Serial.println("0");
-    Serial.print(buf[i], HEX);
-  }
-  Serial.println();
-  return 0;
+  _request((uint8_t *) arr, 10);
+  arr[10] = '\0';
 }
 
 

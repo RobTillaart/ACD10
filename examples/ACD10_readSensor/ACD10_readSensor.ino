@@ -1,5 +1,5 @@
 //
-//    FILE: ACD10_readSensorCode.ino
+//    FILE: ACD10_readSensor.ino
 //  AUTHOR: Rob Tillaart
 // PUPROSE: test basic behaviour and performance
 
@@ -9,8 +9,7 @@
 
 
 ACD10 mySensor;
-char FWversion[12];
-char sensorCode[12];
+
 
 void setup()
 {
@@ -22,20 +21,19 @@ void setup()
 
   Wire.begin();
   mySensor.begin();
-
-  mySensor.readFirmwareVersion(&FWversion[0]);
-  Serial.print("FIRMWARE: \t");
-  Serial.println(FWversion);
-  
-  mySensor.readSensorCode(&sensorCode[0]);
-  Serial.print("SENSORCODE: \t");
-  Serial.println(sensorCode);
 }
 
 
 void loop()
 {
-
+  if (millis() - mySensor.lastRead() > 10000)  //  millis
+  {
+    mySensor.readSensor();
+    Serial.print(mySensor.getCO2Concentration());
+    Serial.print("\t");
+    Serial.print(mySensor.getTemperature());
+    Serial.println();
+  }
 }
 
 

@@ -104,14 +104,25 @@ has a preheat time of 2 minutes.
 
 #### Performance I2C
 
-TODO: clock speed?
+only test read as that is the main function.
+
+|  Clock     |  time (us)  |
+|:----------:|:-----------:|
+|   100 KHz  |             |
+|   200 KHz  |             |
+|   300 KHz  |             |
+|   400 KHz  |             |
+|   500 KHz  |             |
+|   600 KHz  |             |
+
+
 TODO: sketch
 
 
 ## Interface
 
 ```cpp
-#include "acd10.h"
+#include "ACD10.h"
 ```
 
 #### Constructor
@@ -123,15 +134,22 @@ TODO: sketch
 - **uint8_t getAddress()** Returns address set in the constructor.
 
 
-#### Read 
+#### Read
 
 PreHeat functions assume the sensor is (and stays) connected to power.
 
 - **bool preHeatDone()** returns true 120 seconds after constructor is called.
 - **uint32_t preHeatMillisLeft()** returns the time in milliseconds 
 left before preHeat is complete.
+- **bool readSensor()** read the values from the sensor.
+Returns true.
+- **uint32_t getCO2Concentration()** get the last read CO2 PPM from the device.
+Multiple calls will give the same value until **readSensor()** is called.
+- **uint16_t getTemperature()** get the last read temperature from the device.
+Multiple calls will give the same value until **readSensor()** is called.
+- **uint32_t lastRead()** returns the moment of last **readSensor()** in milliseconds 
+since start.
 
-TODO
 
 #### Calibration
 
@@ -144,8 +162,10 @@ TODO
 
 - **void factoryReset()** idem.
 - **bool readFactorySet()** Read back if factory reset was successful.
-- **uint32_t readFirmwareVersion()** dumps firmware version to Serial (for now)
-- **uint32_t readSensorCode()** dumps sensor code version to Serial (for now)
+- **uint32_t readFirmwareVersion(char \* arr)** copies firmware version in array.
+Minimum length is 11.
+- **uint32_t readSensorCode(char \* arr)** copies sensor code in array.
+Minimum length is 11.
 
 
 #### Debug
