@@ -1,5 +1,5 @@
 //
-//    FILE: ACD10_readSensorCode.ino
+//    FILE: ACD10_preheat_test.ino
 //  AUTHOR: Rob Tillaart
 // PUPROSE: test basic behaviour and performance
 
@@ -8,7 +8,7 @@
 #include "ACD10.h"
 
 
-ACD10 mySensor;  //   default address
+ACD10 mySensor;
 
 
 void setup()
@@ -21,15 +21,22 @@ void setup()
 
   Wire.begin();
   mySensor.begin();
-
-  mySensor.readFirmwareVersion();
-  mySensor.readSensorCode();
 }
 
 
 void loop()
 {
-
+  Serial.print(millis() / 1000);
+  if (mySensor.preHeatDone())
+  {
+    Serial.println("\tOK");
+  }
+  else
+  {
+    Serial.print("\tWarming up\t");
+    Serial.println(mySensor.preHeatMillisLeft());
+  }
+  delay(5000);
 }
 
 

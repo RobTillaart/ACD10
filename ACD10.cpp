@@ -16,6 +16,7 @@ ACD10::ACD10(uint8_t address, TwoWire *wire)
   _address = address;
   _wire    = wire;
   _error   = 0;
+  _start   = millis();
 }
 
 
@@ -58,6 +59,32 @@ uint8_t ACD10::getAddress()
 
 /////////////////////////////////////////////
 //
+//  READ CO2
+//
+bool ACD10::preHeatDone()
+{
+  return preHeatMillisLeft() == 0;
+}
+
+
+uint32_t ACD10::preHeatMillisLeft()
+{
+  uint32_t delta = millis() - _start;
+  if (delta >= 120000UL) return 0;
+  return 120000UL - delta;
+}
+
+
+
+/////////////////////////////////////////////
+//
+//  CALIBRATION
+//
+
+
+
+/////////////////////////////////////////////
+//
 //  MISC
 //
 void ACD10::factoryReset()
@@ -79,7 +106,7 @@ bool ACD10::readFactorySet()
 
 uint32_t ACD10::readFirmwareVersion()
 {
-  uint8_t buf[10] = { 0xd1, 0x00 };
+  uint8_t buf[10] = { 0xD1, 0x00 };
   _command(buf, 2);
   _request(buf, 10);
 
@@ -87,7 +114,7 @@ uint32_t ACD10::readFirmwareVersion()
   for (int i = 0; i < 10; i++)
   {
     if (buf[i] < 0x10) Serial.println("0");
-    Serial.print(buf[i]);
+    Serial.print(buf[i], HEX);
   }
   Serial.println();
   return 0;
@@ -96,7 +123,7 @@ uint32_t ACD10::readFirmwareVersion()
 
 uint32_t ACD10::readSensorCode()
 {
-  uint8_t buf[10] = { 0xd2, 0x01 };
+  uint8_t buf[10] = { 0xD2, 0x01 };
   _command(buf, 2);
   _request(buf, 10);
 
@@ -104,7 +131,7 @@ uint32_t ACD10::readSensorCode()
   for (int i = 0; i < 10; i++)
   {
     if (buf[i] < 0x10) Serial.println("0");
-    Serial.print(buf[i]);
+    Serial.print(buf[i], HEX);
   }
   Serial.println();
   return 0;

@@ -11,16 +11,54 @@
 
 # ACD10
 
-Arduino library for the ACD10 CO2 sensor.
+Arduino library for the ACD10 CO2 sensor (I2C).
 
 
 ## Description
 
 This library is experimental.
 
-Assong ACD10 CO2 and temperature sensor.
-TODO: range?
+Aosong ACD10 CO2 and temperature sensor.
 
+CO2 range:  400 ~ 5000 ppm ±(50ppm + 5% reading)
+
+Temperature range:
+
+5 V device  (225 mW @ 5V ==> 50 mA separate power supply)
+
+- preheat time 120 seconds  TODO
+
+operating conditions: 
+- temperature: 0°~+50°; 
+- humidity: 0~95%RH (non-condensing)  
+
+
+#### Hardware
+
+```
+             TOPVIEW ACD10
+         +--------------------+
+   pin 6 | o                  |
+   pin 5 | o                o |  pin 1
+         |                  o |  pin 2
+         |                  o |  pin 3
+         |                  o |  pin 4
+         |                    |
+         +--------------------+
+```
+
+|  pin  |   name   |  description      |  Notes  |
+|:-----:|:--------:|:------------------|:-------:|
+|   1   |  SDA/RX  |  I2C data         |  3-5V
+|   2   |  SCL/TX  |  I2C clock        |  3-5V
+|   3   |  GND     |  Ground           |
+|   4   |  VCC     |  Power +5V        |
+|   5   |  SET     |  select com mode  |  HIGH (or nc) => I2C, LOW => Serial
+|   6   |   -      |  not connected    |
+
+If pin 5 is not connected, the default (HIGH) is to select I2C.
+If pin 5 is connected to GND, Serial / UART mode is selected.
+This latter mode is **NOT** supported by this library.
 
 
 #### related
@@ -49,9 +87,19 @@ TODO: sketch - main functions performance @100KHz
 
 **ACD10_DEFAULT_ADDRESS** = 0x2A
 
-TODO: Does it support other addresses?
 
-TODO: include section about I2C multiplexer, multi devices.
+#### Multiple sensors.
+
+The ACD10 sensor has a fixed I2C address 0x2A (42) so only 
+one sensor per I2C bus can be used. 
+If one needs more, one should use an I2C multiplexer or an 
+MCU with multiple I2C buses.
+
+- https://github.com/RobTillaart/TCA9548  (I2C 8 channel multiplexer)
+
+Using the VCC as a Chip Select is not advised as the ACD10 
+has a preheat time of 2 minutes.
+
 
 
 #### Performance I2C
@@ -77,9 +125,17 @@ TODO: sketch
 
 #### Read 
 
+PreHeat functions assume the sensor is (and stays) connected to power.
+
+- **bool preHeatDone()** returns true 120 seconds after constructor is called.
+- **uint32_t preHeatMillisLeft()** returns the time in milliseconds 
+left before preHeat is complete.
+
 TODO
 
 #### Calibration
+
+Read the datasheet about calibration process (twice).
 
 TODO
 

@@ -29,6 +29,14 @@ public:
   uint8_t  getAddress();
 
 
+  //  READ
+  bool     preHeatDone();
+  uint32_t preHeatMillisLeft();
+
+
+  //  CALIBRATION
+
+
   //  MISC
   void     factoryReset();
   bool     readFactorySet();
@@ -48,6 +56,7 @@ private:
   int      _request(uint8_t * arr, uint8_t size);
   uint8_t  _crc8(uint8_t * arr, uint8_t size);
 
+  uint32_t _start = 0;
   uint32_t _concentration = 0;
   uint16_t _temperature   = 0;
 
