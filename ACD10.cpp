@@ -56,13 +56,71 @@ uint8_t ACD10::getAddress()
 }
 
 
-uint8_t ACD10::getLastError()
+/////////////////////////////////////////////
+//
+//  MISC
+//
+void ACD10::factoryReset()
 {
-  uint8_t e = _error;
+  uint8_t buf[10] = { 0x52, 0x02, 0x00};
+  _command(buf, 3);
+}
+
+
+bool ACD10::readFactorySet()
+{
+  uint8_t buf[10] = { 0x52, 0x02 };
+  _command(buf, 2);
+  _request(buf, 3);
+
+  return (buf[1] == 0x01);
+}
+
+
+uint32_t ACD10::readFirmwareVersion()
+{
+  uint8_t buf[10] = { 0xd1, 0x00 };
+  _command(buf, 2);
+  _request(buf, 10);
+
+  //  what does FWV look like?
+  for (int i = 0; i < 10; i++)
+  {
+    if (buf[i] < 0x10) Serial.println("0");
+    Serial.print(buf[i]);
+  }
+  Serial.println();
+  return 0;
+}
+
+
+uint32_t ACD10::readSensorCode()
+{
+  uint8_t buf[10] = { 0xd2, 0x01 };
+  _command(buf, 2);
+  _request(buf, 10);
+
+  //  what does it look like?
+  for (int i = 0; i < 10; i++)
+  {
+    if (buf[i] < 0x10) Serial.println("0");
+    Serial.print(buf[i]);
+  }
+  Serial.println();
+  return 0;
+}
+
+
+/////////////////////////////////////////////
+//
+//  DEBUG
+//
+int ACD10::getLastError()
+{
+  int e = _error;
   _error = 0;
   return e;
 }
-
 
 
 ///////////////////////////////////////////////
@@ -70,14 +128,60 @@ uint8_t ACD10::getLastError()
 //  PRIVATE
 //
 
-uint8_t ACD10::writeReg(uint8_t reg, uint8_t value)
+int ACD10::_command(uint8_t * arr, uint8_t size)
 {
-  return 0;
+  _wire->beginTransmission(_address);
+  for (int i = 0; i < size; i++)
+  {
+    _wire->write(arr[i]);
+  }
+  _error = _wire->endTransmission();
+  return _error;
 }
 
-uint8_t ACD10::readReg(uint8_t reg)
+
+int ACD10::_request(uint8_t * arr, uint8_t size)
 {
-  return 0;
+  int bytes = _wire->requestFrom(_address, size);
+  if (bytes == 0)  
+  {
+    _error = -1;
+    return _error;
+  }
+  if (bytes < size) 
+  {
+    _error = -2;
+    return _error;
+  }
+  
+  for (int i = 0; i < size; i++)
+  {
+    arr[i] = _wire->read();
+  }
+  _error = 0;
+  return _error;
 }
+
+
+uint8_t ACD10::_crc8(uint8_t * arr, uint8_t size)
+{
+  uint8_t crc = 0xFF;
+  for (int b = 0; b < size; b++)
+  {
+    crc ^= arr[b];
+    if (crc & 0x80)
+    {
+      crc <<= 1;
+      crc ^= 0x31;
+    }
+    else
+    {
+      crc <<= 1;
+    }
+  }
+  return crc;
+}
+
 
 //  -- END OF FILE --
+

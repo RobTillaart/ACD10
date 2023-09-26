@@ -18,6 +18,9 @@ Arduino library for the ACD10 CO2 sensor.
 
 This library is experimental.
 
+Assong ACD10 CO2 and temperature sensor.
+TODO: range?
+
 
 
 #### related
@@ -37,19 +40,24 @@ This library is experimental.
 TODO: Test on Arduino UNO and ESP32?
 
 
-## Performance 
+#### Performance
 
-TODO
+TODO: sketch - main functions performance @100KHz
 
 
 ## I2C
 
-Address = 0x2A
+**ACD10_DEFAULT_ADDRESS** = 0x2A
 
-Does it support other addresses?
+TODO: Does it support other addresses?
 
-include section about I2C multiplexer, multi devices.
+TODO: include section about I2C multiplexer, multi devices.
 
+
+#### Performance I2C
+
+TODO: clock speed?
+TODO: sketch
 
 
 ## Interface
@@ -60,13 +68,33 @@ include section about I2C multiplexer, multi devices.
 
 #### Constructor
 
+- **ACD10(uint8_t address = ACD10_DEFAULT_ADDRESS, TwoWire \*wire = &Wire)**
+- **bool begin(uint8_t sda, uint8_t scl)** ESP32 (needed?)
+- **bool begin()**
+- **bool isConnected()** Checks if device address can be foound on I2C bus.
+- **uint8_t getAddress()** Returns address set in the constructor.
 
 
+#### Read 
+
+TODO
+
+#### Calibration
+
+TODO
 
 
-## Operation
+#### Miscellaneous
 
-See examples.
+- **void factoryReset()** idem.
+- **bool readFactorySet()** Read back if factory reset was successful.
+- **uint32_t readFirmwareVersion()** dumps firmware version to Serial (for now)
+- **uint32_t readSensorCode()** dumps sensor code version to Serial (for now)
+
+
+#### Debug
+
+- **uint8_t getLastError()**
 
 
 ## Future
@@ -75,7 +103,7 @@ See examples.
 
 - improve documentation
 - get hardware to test
-- everything else
+
 
 #### Should
 

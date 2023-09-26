@@ -26,22 +26,30 @@ public:
 #endif
   bool     begin();
   bool     isConnected();
-
   uint8_t  getAddress();
 
-  //  int      read();
+
+  //  MISC
+  void     factoryReset();
+  bool     readFactorySet();
+  uint32_t readFirmwareVersion();   //  TODO
+  uint32_t readSensorCode();        //  TODO
 
 
-  //  ERROR
-  uint8_t  getLastError();
+  //  DEBUG
+  int  getLastError();
 
 
 private:
   uint8_t  _address;
   TwoWire* _wire;
 
-  uint8_t  writeReg(uint8_t reg, uint8_t value);
-  uint8_t  readReg(uint8_t reg);
+  int      _command(uint8_t * arr, uint8_t size);
+  int      _request(uint8_t * arr, uint8_t size);
+  uint8_t  _crc8(uint8_t * arr, uint8_t size);
+
+  uint32_t _concentration = 0;
+  uint16_t _temperature   = 0;
 
   uint8_t  _error;
 };
