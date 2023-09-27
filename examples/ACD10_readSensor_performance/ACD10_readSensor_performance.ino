@@ -1,0 +1,65 @@
+//
+//    FILE: ACD10_readSensor_performance.ino
+//  AUTHOR: Rob Tillaart
+// PUPROSE: test basic behaviour and performance
+
+
+#include "Wire.h"
+#include "ACD10.h"
+
+
+ACD10 mySensor;
+
+
+void setup()
+{
+  Serial.begin(115200);
+  Serial.println();
+  Serial.println(__FILE__);
+  Serial.print("ACD10_LIB_VERSION: ");
+  Serial.println(ACD10_LIB_VERSION);
+
+  Wire.begin();
+  mySensor.begin();
+
+  test(100000);
+  test(200000);
+  test(300000);
+  test(400000);
+  test(500000);
+  test(600000);
+  test(700000);
+  test(800000);
+
+  Serial.println("\ndone...");
+}
+
+
+void loop()
+{
+}
+
+
+void test(uint32_t speed)
+{
+  Wire.setClock(speed);
+  delay(100);
+  uint32_t start = millis();
+  for (int i = 0; i < 1000; i++)
+  {
+    mySensor.readSensor();
+  }
+  uint32_t duration = millis() - start;
+
+  Serial.print("|  ");
+  Serial.print(speed);
+  Serial.print("  |  ");
+  Serial.print(duration * 0.001);
+  Serial.print("  |");
+  Serial.println();
+  //  reset I2C bus
+  Wire.setClock(100000);
+}
+
+
+//  -- END OF FILE --

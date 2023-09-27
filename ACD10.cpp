@@ -11,12 +11,15 @@
 #include "ACD10.h"
 
 
-ACD10::ACD10(uint8_t address, TwoWire *wire)
+ACD10::ACD10(TwoWire *wire)
 {
-  _address = address;
-  _wire    = wire;
-  _error   = 0;
-  _start   = millis();
+  _wire = wire;
+  _error = 0;
+  _lastRead = 0;
+  _concentration = 0;
+  _temperature = 0;
+  _start = millis();
+
 }
 
 
@@ -81,7 +84,28 @@ bool ACD10::readSensor()
   _command(buf, 2);
   _request(buf, 9);
 
-  //  TODO CRC CHECK?
+  //  CRC CHECK
+  if (buf[2] != _crc8(&buf[0], 2))
+  {
+    Serial.println("CRC error 1");
+  }
+  if (buf[5] != _crc8(&buf[3], 2))
+  {
+    Serial.println("CRC error 2");
+  }
+  if (buf[8] != _crc8(&buf[6], 2))
+  {
+    Serial.println("CRC error 2");
+  }
+
+  //  DUMP
+  for (int i = 0; i < 9; i++)
+  {
+    if (buf[i] < 16) Serial.print("0");
+    Serial.print(buf[i], HEX);
+    Serial.print(" ");
+  }
+
   _concentration   = buf[0];
   _concentration <<= 8;
   _concentration  += buf[1];
@@ -90,7 +114,6 @@ bool ACD10::readSensor()
   _concentration <<= 8;
   _concentration  += buf[4];
 
-  //  TODO CRC CHECK?
   _temperature = buf[6] * 256 + buf[7];
   _lastRead = millis();
 
@@ -121,7 +144,57 @@ uint32_t ACD10::lastRead()
 //
 //  CALIBRATION
 //
+bool ACD10::setCalibrationMode(uint8_t mode)
+{
+  if (mode > 1) return false;
+  uint8_t buf[10] = { 0x53, 0x06, 0x00, 0x00};
+  buf[3] = mode;
+  buf[4] = _crc8(&buf[2], 2);
+  //  Serial.println(buf[4], HEX);
+  _command(buf, 5);
+  return true;
+}
 
+
+uint8_t ACD10::readCallibrationMode()
+{
+  uint8_t buf[10] = { 0x53, 0x06 };
+  _command(buf, 2);
+  _request(buf, 3);
+  // if (buf[2] != _crc8(&buf[0], 2))
+  // {
+    // Serial.print(__FUNCTION__);
+    // Serial.println(": CRC error");
+  // }
+  return buf[1];
+}
+
+
+bool ACD10::setManualCalibration(uint16_t value)
+{
+  if ((value < 400) || (value > 5000)) return false;
+  uint8_t buf[10] = { 0x52, 0x04, 0x00, 0x00, 0x00 };
+  buf[3] = value && 0xFF;
+  buf[2] = value >> 8;
+  buf[4] = _crc8(&buf[2], 2);
+  _command(buf, 5);
+  return true;
+}
+
+
+uint16_t ACD10::readManualCalibration()
+{
+  uint8_t buf[10] = { 0x52, 0x04 };
+  _command(buf, 2);
+  _request(buf, 3);
+  // if (buf[2] != _crc8(&buf[0], 2))
+  // {
+    // Serial.print(__FUNCTION__);
+    // Serial.println(": CRC error");
+  // }
+  uint16_t value = buf[0] * 256 + buf[1];
+  return value;
+}
 
 
 /////////////////////////////////////////////
@@ -221,14 +294,17 @@ uint8_t ACD10::_crc8(uint8_t * arr, uint8_t size)
   for (int b = 0; b < size; b++)
   {
     crc ^= arr[b];
-    if (crc & 0x80)
+    for (int bit = 0x80; bit; bit >>= 1)
     {
-      crc <<= 1;
-      crc ^= 0x31;
-    }
-    else
-    {
-      crc <<= 1;
+      if (crc & 0x80)
+      {
+        crc <<= 1;
+        crc ^= 0x31;
+      }
+      else
+      {
+        crc <<= 1;
+      }
     }
   }
   return crc;

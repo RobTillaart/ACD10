@@ -8,7 +8,7 @@
 #include "ACD10.h"
 
 
-ACD10 mySensor;  //   default address
+ACD10 mySensor;
 
 
 void setup()

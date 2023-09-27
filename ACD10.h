@@ -16,10 +16,11 @@
 #define ACD10_LIB_VERSION         (F("0.1.0"))
 #define ACD10_DEFAULT_ADDRESS     0x2A
 
+
 class ACD10
 {
 public:
-  ACD10(uint8_t address = ACD10_DEFAULT_ADDRESS, TwoWire *wire = &Wire);
+  ACD10(TwoWire *wire = &Wire);
 
 #if defined (ESP8266) || defined(ESP32)
   bool     begin(uint8_t sda, uint8_t scl);
@@ -40,6 +41,12 @@ public:
 
 
   //  CALIBRATION
+  //       0 = manual  1 = auto
+  bool     setCalibrationMode(uint8_t mode);  
+  uint8_t  readCallibrationMode();
+  //       TODO
+  bool     setManualCalibration(uint16_t value);
+  uint16_t readManualCalibration();
 
 
   //  MISC
@@ -52,9 +59,8 @@ public:
   //  DEBUG
   int  getLastError();
 
-
 private:
-  uint8_t  _address;
+  uint8_t  _address = 0x2A;
   TwoWire* _wire;
 
   int      _command(uint8_t * arr, uint8_t size);
@@ -63,7 +69,7 @@ private:
 
   uint32_t _start = 0;
   uint32_t _lastRead = 0;
-  uint32_t _concentration = 0;
+  uint32_t _concentration = 0;    //  why datasheet states 32 bit as 400-5000 fit in 16 bit??
   uint16_t _temperature   = 0;
 
   uint8_t  _error;
