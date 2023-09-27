@@ -19,7 +19,6 @@ ACD10::ACD10(TwoWire *wire)
   _concentration = 0;
   _temperature = 0;
   _start = millis();
-
 }
 
 
@@ -95,7 +94,7 @@ bool ACD10::readSensor()
   }
   if (buf[8] != _crc8(&buf[6], 2))
   {
-    Serial.println("CRC error 2");
+    Serial.println("CRC error 3");
   }
 
   //  DUMP
@@ -105,6 +104,7 @@ bool ACD10::readSensor()
     Serial.print(buf[i], HEX);
     Serial.print(" ");
   }
+  Serial.println();
 
   _concentration   = buf[0];
   _concentration <<= 8;
@@ -147,7 +147,7 @@ uint32_t ACD10::lastRead()
 bool ACD10::setCalibrationMode(uint8_t mode)
 {
   if (mode > 1) return false;
-  uint8_t buf[10] = { 0x53, 0x06, 0x00, 0x00};
+  uint8_t buf[5] = { 0x53, 0x06, 0x00, 0x00, 0x00 };
   buf[3] = mode;
   buf[4] = _crc8(&buf[2], 2);
   //  Serial.println(buf[4], HEX);
@@ -158,7 +158,7 @@ bool ACD10::setCalibrationMode(uint8_t mode)
 
 uint8_t ACD10::readCallibrationMode()
 {
-  uint8_t buf[10] = { 0x53, 0x06 };
+  uint8_t buf[3] = { 0x53, 0x06, 0x00 };
   _command(buf, 2);
   _request(buf, 3);
   // if (buf[2] != _crc8(&buf[0], 2))
@@ -173,7 +173,7 @@ uint8_t ACD10::readCallibrationMode()
 bool ACD10::setManualCalibration(uint16_t value)
 {
   if ((value < 400) || (value > 5000)) return false;
-  uint8_t buf[10] = { 0x52, 0x04, 0x00, 0x00, 0x00 };
+  uint8_t buf[5] = { 0x52, 0x04, 0x00, 0x00, 0x00 };
   buf[3] = value && 0xFF;
   buf[2] = value >> 8;
   buf[4] = _crc8(&buf[2], 2);
@@ -184,7 +184,7 @@ bool ACD10::setManualCalibration(uint16_t value)
 
 uint16_t ACD10::readManualCalibration()
 {
-  uint8_t buf[10] = { 0x52, 0x04 };
+  uint8_t buf[3] = { 0x52, 0x04, 0x00 };
   _command(buf, 2);
   _request(buf, 3);
   // if (buf[2] != _crc8(&buf[0], 2))
@@ -203,17 +203,21 @@ uint16_t ACD10::readManualCalibration()
 //
 void ACD10::factoryReset()
 {
-  uint8_t buf[4] = { 0x52, 0x02, 0x00};
+  uint8_t buf[3] = { 0x52, 0x02, 0x00};
   _command(buf, 3);
 }
 
 
 bool ACD10::readFactorySet()
 {
-  uint8_t buf[4] = { 0x52, 0x02 };
+  uint8_t buf[3] = { 0x52, 0x02, 0x00 };
   _command(buf, 2);
   _request(buf, 3);
-
+  // if (buf[2] != _crc8(&buf[0], 2))
+  // {
+    // Serial.print(__FUNCTION__);
+    // Serial.println(": CRC error");
+  // }
   return (buf[1] == 0x01);
 }
 
@@ -268,17 +272,17 @@ int ACD10::_command(uint8_t * arr, uint8_t size)
 int ACD10::_request(uint8_t * arr, uint8_t size)
 {
   int bytes = _wire->requestFrom(_address, size);
-  if (bytes == 0)  
+  if (bytes == 0)
   {
     _error = -1;
     return _error;
   }
-  if (bytes < size) 
+  if (bytes < size)
   {
     _error = -2;
     return _error;
   }
-  
+
   for (int i = 0; i < size; i++)
   {
     arr[i] = _wire->read();

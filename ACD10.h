@@ -42,9 +42,8 @@ public:
 
   //  CALIBRATION
   //       0 = manual  1 = auto
-  bool     setCalibrationMode(uint8_t mode);  
+  bool     setCalibrationMode(uint8_t mode);
   uint8_t  readCallibrationMode();
-  //       TODO
   bool     setManualCalibration(uint16_t value);
   uint16_t readManualCalibration();
 

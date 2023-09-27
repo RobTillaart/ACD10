@@ -27,6 +27,8 @@ readFactorySet	KEYWORD2
 readFirmwareVersion	KEYWORD2
 readSensorCode	KEYWORD2
 
+getLastError	KEYWORD2
+
 
 # Constants (LITERAL1)
 ACD10_LIB_VERSION	LITERAL1

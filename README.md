@@ -25,7 +25,7 @@ The sensor can be read over I2C and over Serial, however this library
 only support the I2C interface.
 The device has a fixed I2C address of 0x2A (42). 
 
-The CO2 concentration supported by the sensor has a range from 400 ~ 5000 ppm ±(50ppm + 5% reading).
+The CO2 concentration supported by the sensor has a range from 400 ~ 5000 ppm Â±(50ppm + 5% reading).
 This makes the sensor applicable for outdoor and indoor measurements in
 a normal building setting. It is not suitable for CO2 heavy "industrial" environments.
 
@@ -54,7 +54,7 @@ applications that may cause personal injury due to the product's failure.
 
 #### Operating conditions
 
-- temperature: 0°C~ +50°C ==> so keep away from freezing cold or direct sunlight.
+- temperature: 0Â°C~ +50Â°C ==> so keep away from freezing cold or direct sunlight.
 - humidity: 0% ~ 95% RH ==> non-condensing conditions.
 - Data refresh frequency: 2 seconds
 
@@ -116,15 +116,13 @@ Do not forget pull up resistors on SDA and SCL lines.
 
 The ACD10 sensor has a fixed I2C address 0x2A (42) so only
 one sensor per I2C bus can be used.
-If one needs more sensors there are two options.
-One could use an I2C multiplexer or use an MCU with multiple I2C buses.
-
-- https://github.com/RobTillaart/TCA9548  (I2C 8 channel multiplexer)
+If one needs more sensors there are some options.
+- One could use an I2C multiplexer - https://github.com/RobTillaart/TCA9548  (I2C 8 channel multiplexer)
+- One could use an MCU with multiple I2C buses.
+- One could use a Two-Wire compatible SW I2C (outside scope of this library).
 
 Using the VCC as a Chip Select is not advised as the ACD10
 has a preheat time of 2 minutes.
-
-Note: The device is not tested with a SW I2C bus.
 
 
 #### Performance I2C
@@ -142,7 +140,7 @@ Only test **readSensor()** as that is the main function.
 |   600 KHz  |             |
 
 
-TODO: run peformance sketch
+TODO: run performance sketch.
 
 
 ## Interface
@@ -154,9 +152,10 @@ TODO: run peformance sketch
 #### Constructor
 
 - **ACD10(uint8_t address = ACD10_DEFAULT_ADDRESS, TwoWire \*wire = &Wire)**
-- **bool begin(uint8_t sda, uint8_t scl)** ESP32 (needed?)
-- **bool begin()**
-- **bool isConnected()** Checks if device address can be foound on I2C bus.
+- **bool begin(uint8_t sda, uint8_t scl)** (ESP32) initializes I2C, 
+and checks if device is visible on the I2C bus.
+- **bool begin()** initializes I2C, and checks if device is visible on the I2C bus.
+- **bool isConnected()** Checks if device address can be found on I2C bus.
 - **uint8_t getAddress()** Returns address set in the constructor.
 
 
@@ -180,11 +179,16 @@ since start.
 #### Calibration
 
 Read the datasheet about calibration process (twice).
+Incorrect calibration leads to incorrect output.
 
-- **bool setCalibrationMode(uint8_t mode)**
-- **uint8_t readCallibrationMode()**
-- **void setManualCalibration(uint16_t value)**
-- **uint16_t readManualCalibration()**
+- **bool setCalibrationMode(uint8_t mode)** 0 = manual mode, 1 = automatic mode.
+returns false if mode out of range.
+- **uint8_t readCallibrationMode()** return set mode. 
+- **void setManualCalibration(uint16_t value)** as the range of the device is 
+from 400 to 5000, the parameter value should be in this range.
+- **uint16_t readManualCalibration()** read back the set manual calibration value.
+
+Note: One should wait 5 milliseconds between the calibration calls (see datasheet).
 
 
 #### Miscellaneous
@@ -199,7 +203,7 @@ Minimum length is 11.
 
 #### Debug
 
-- **uint8_t getLastError()**
+- **uint8_t getLastError()** returns last error of low level communication.
 
 
 ## Future
