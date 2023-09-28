@@ -44,17 +44,23 @@ void test(uint32_t speed)
 {
   Wire.setClock(speed);
   delay(100);
-  uint32_t start = millis();
-  for (int i = 0; i < 1000; i++)
-  {
-    mySensor.readSensor();
-  }
-  uint32_t duration = millis() - start;
+
+  uint32_t start = micros();
+  mySensor.requestSensor();
+  uint32_t duration1 = micros() - start;
+
+  while(mySensor.requestReady() == false) delay(10);
+  
+  start = micros();
+  mySensor.readSensor();
+  uint32_t duration2 = micros() - start;
 
   Serial.print("|  ");
   Serial.print(speed);
   Serial.print("  |  ");
-  Serial.print(duration * 0.001);
+  Serial.print(duration1);
+  Serial.print("  |  ");
+  Serial.print(duration2);
   Serial.print("  |");
   Serial.println();
   //  reset I2C bus

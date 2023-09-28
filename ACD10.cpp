@@ -77,34 +77,64 @@ uint32_t ACD10::preHeatMillisLeft()
 }
 
 
-bool ACD10::readSensor()
+int ACD10::requestSensor()
 {
-  uint8_t buf[10] = { 0x03, 0x00 };
-  _command(buf, 2);
-  _request(buf, 9);
+  uint8_t buf[2] = { 0x03, 0x00 };
+  _requestStart = millis();
+  return _command(buf, 2);
+}
+
+
+bool ACD10::requestReady()
+{
+  if (_requestStart == 0)  //  no request pending.
+  {
+    return false;
+  }
+  return ((millis() - _requestStart) > _requestTime);
+}
+
+
+int ACD10::readSensor()
+{
+  if (requestReady() == false)
+  {
+    return ACD10_NOT_READY;
+  }
+
+  uint8_t buf[10];
+  if (_request(buf, 9) != 0)
+  {
+    return ACD10_REQUEST_ERROR;
+  }
+  _requestStart = 0;  //  set no request pending.
 
   //  CRC CHECK
   if (buf[2] != _crc8(&buf[0], 2))
   {
-    Serial.println("CRC error 1");
+    //  Serial.println("CRC error 1");
+    return ACD10_CRC_ERROR;
   }
   if (buf[5] != _crc8(&buf[3], 2))
   {
-    Serial.println("CRC error 2");
+    //  Serial.println("CRC error 2");
+    return ACD10_CRC_ERROR;
+
   }
   if (buf[8] != _crc8(&buf[6], 2))
   {
-    Serial.println("CRC error 3");
+    //  Serial.println("CRC error 3");
+    return ACD10_CRC_ERROR;
   }
 
   //  DUMP
-  for (int i = 0; i < 9; i++)
-  {
-    if (buf[i] < 16) Serial.print("0");
-    Serial.print(buf[i], HEX);
-    Serial.print(" ");
-  }
-  Serial.println();
+  // for (int i = 0; i < 9; i++)
+  // {
+    // if (buf[i] < 16) Serial.print("0");
+    // Serial.print(buf[i], HEX);
+    // Serial.print(" ");
+  // }
+  // Serial.println();
 
   _concentration   = buf[0];
   _concentration <<= 8;
@@ -117,7 +147,7 @@ bool ACD10::readSensor()
   _temperature = buf[6] * 256 + buf[7];
   _lastRead = millis();
 
-  return true;
+  return ACD10_OK;
 }
 
 
@@ -138,6 +168,17 @@ uint32_t ACD10::lastRead()
   return _lastRead;
 }
 
+
+void ACD10::setRequestTime(uint8_t milliseconds)
+{
+  _requestTime = milliseconds;
+}
+
+
+uint8_t ACD10::getRequestTime()
+{
+  return _requestTime;
+}
 
 
 /////////////////////////////////////////////

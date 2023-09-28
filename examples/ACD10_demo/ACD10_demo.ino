@@ -21,13 +21,20 @@ void setup()
 
   Wire.begin();
   mySensor.begin();
-  
 }
 
 
 void loop()
 {
+  mySensor.requestSensor();
+  while (mySensor.requestReady() == false) delay(10);
+  mySensor.readSensor();
+  Serial.print(mySensor.getCO2Concentration());
+  Serial.print("\t");
+  Serial.print(mySensor.getTemperature());
+  Serial.println();
 
+  delay(2000);
 }
 
 

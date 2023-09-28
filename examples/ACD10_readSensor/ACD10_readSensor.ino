@@ -26,7 +26,14 @@ void setup()
 
 void loop()
 {
-  if (millis() - mySensor.lastRead() > 10000)  //  millis
+  //  prepare a request every 5 seconds.
+  if (millis() - mySensor.lastRead() > 5000)  //  millis
+  {
+    mySensor.requestSensor();
+  }
+
+  //  if request has had enough time read the sensor.
+  if (mySensor.requestReady())
   {
     mySensor.readSensor();
     Serial.print(mySensor.getCO2Concentration());
@@ -34,6 +41,9 @@ void loop()
     Serial.print(mySensor.getTemperature());
     Serial.println();
   }
+
+  //  do other things here.
+  delay(1000);
 }
 
 

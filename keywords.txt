@@ -12,10 +12,15 @@ getAddress	KEYWORD2
 preHeatDone	KEYWORD2
 preHeatMillisLeft	KEYWORD2
 
+requestSensor	KEYWORD2
+requestReady	KEYWORD2
 readSensor	KEYWORD2
 getCO2Concentration	KEYWORD2
 getTemperature	KEYWORD2
 lastRead	KEYWORD2
+
+setRequestTime	KEYWORD2
+getRequestTime	KEYWORD2
 
 setCalibrationMode	KEYWORD2
 readCallibrationMode	KEYWORD2

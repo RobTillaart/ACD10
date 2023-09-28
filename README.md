@@ -159,21 +159,40 @@ and checks if device is visible on the I2C bus.
 - **uint8_t getAddress()** Returns address set in the constructor.
 
 
-#### Read
+#### PreHeat
 
 PreHeat functions assume the sensor is (and stays) connected to power.
 
 - **bool preHeatDone()** returns true 120 seconds after constructor is called.
 - **uint32_t preHeatMillisLeft()** returns the time in milliseconds
 left before preHeat is complete.
-- **bool readSensor()** read the values from the sensor.
-Returns true.
-- **uint32_t getCO2Concentration()** get the last read CO2 PPM from the device.
-Multiple calls will give the same value until **readSensor()** is called.
+
+
+#### Request and Read
+
+The interface of the sensor is made asynchronous as there is a delay needed
+of around 80 milliseconds between a request for new data and the availability
+of that new data.
+
+- **int requestSensor()** request a new measurement / data.
+This must be called before the sensor can be read by **readSensor()**
+- **bool requestReady()** has enough time passed since **requestSensor()**
+ to call **readSensor()**?
+- **int readSensor()** read the values from the sensor.
+Returns status, 0 == OK, other values are error-codes.
+- **uint32_t getCO2Concentration()** get the last read CO2 measurement in 
+PPM from the device.
+Multiple calls will give the same value until new measurement is made.
 - **uint16_t getTemperature()** get the last read temperature from the device.
-Multiple calls will give the same value until **readSensor()** is called.
+Multiple calls will give the same value until new measurement is made.
 - **uint32_t lastRead()** returns the moment of last **readSensor()** in milliseconds
 since start.
+Note the sensor can be read only once every two seconds, less often is better.
+- **void setRequestTime(uint8_t milliseconds = 80)** set the time to make a measurement.
+Default = 80 milliseconds.
+This can be used to tweak / optimize performance a bit. 
+Use 5~10 milliseconds above the minimal value the sensor still works.
+- **uint8_t getRequestTime()** returns the current request time in milliseconds.
 
 
 #### Calibration
@@ -216,9 +235,13 @@ Minimum length is 11.
 
 #### Should
 
-- create unit tests if possible
+- improve error handling
+
 
 #### Could
+
+- rethink function names?
+- create unit tests if possible
 
 
 #### Wont

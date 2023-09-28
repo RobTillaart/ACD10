@@ -46,6 +46,19 @@ unittest(test_constants)
 }
 
 
+unittest(test_constructor)
+{
+  ACD10 acd;
+
+  assertEqual(acd.getAddress(), ACD10_DEFAULT_ADDRESS);
+  assertEqual(acd.getRequestTime(), 80);
+  assertEqual(acd.getLastError(), 0);
+  assertEqual(acd.lastRead(), 0);
+  assertEqual(acd.getCO2Concentration(), 0);
+  assertEqual(acd.getTemperature(), 0);
+}
+
+
 unittest_main()
 
 

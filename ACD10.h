@@ -16,6 +16,13 @@
 #define ACD10_LIB_VERSION         (F("0.1.0"))
 #define ACD10_DEFAULT_ADDRESS     0x2A
 
+//  ERROR CODES
+//  values <> 0 are errors.
+#define ACD10_OK                  0x00
+#define ACD10_CRC_ERROR           0x01
+#define ACD10_NOT_READY           0x10
+#define ACD10_REQUEST_ERROR       0x11
+
 
 class ACD10
 {
@@ -34,10 +41,15 @@ public:
   bool     preHeatDone();
   uint32_t preHeatMillisLeft();
 
-  bool     readSensor();
+  int      requestSensor();
+  bool     requestReady();
+  int      readSensor();
   uint32_t getCO2Concentration();
   uint16_t getTemperature();
   uint32_t lastRead();
+
+  void     setRequestTime(uint8_t milliseconds = 80);
+  uint8_t  getRequestTime();
 
 
   //  CALIBRATION
@@ -70,7 +82,8 @@ private:
   uint32_t _lastRead = 0;
   uint32_t _concentration = 0;    //  why datasheet states 32 bit as 400-5000 fit in 16 bit??
   uint16_t _temperature   = 0;
-
+  uint8_t  _requestTime   = 80;
+  uint32_t _requestStart  = 0;
   uint8_t  _error;
 };
 
