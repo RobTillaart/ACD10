@@ -130,9 +130,9 @@ has a preheat time of 2 minutes.
 Only test **readSensor()** as that is the main function.
 
 
-|  Clock     |  time (us)  |
-|:----------:|:-----------:|
-|   100 KHz  |             |
+|  Clock     |  time (us)  |  Notes  |
+|:----------:|:-----------:|:--------|
+|   100 KHz  |             |  default 
 |   200 KHz  |             |
 |   300 KHz  |             |
 |   400 KHz  |             |
@@ -174,10 +174,10 @@ The interface of the sensor is made asynchronous as there is a delay needed
 of around 80 milliseconds between a request for new data and the availability
 of that new data.
 
-- **int requestSensor()** request a new measurement / data.
+- **int requestSensor()** request a new measurement / data.  
 This must be called before the sensor can be read by **readSensor()**
-- **bool requestReady()** has enough time passed since **requestSensor()**
- to call **readSensor()**?
+- **bool requestReady()** has enough time passed since the call to **requestSensor()**
+for the acquisition to happen and to call **readSensor()**?
 - **int readSensor()** read the values from the sensor.
 Returns status, 0 == OK, other values are error-codes.
 - **uint32_t getCO2Concentration()** get the last read CO2 measurement in 
@@ -235,6 +235,8 @@ Minimum length is 11.
 
 #### Should
 
+- investigate the acquisition time of 80 milliseconds
+  - can it be made shorter by default?
 - improve error handling
 
 
