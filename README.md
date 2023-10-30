@@ -26,7 +26,8 @@ This makes the sensor applicable for outdoor and indoor measurements in
 a normal building setting. 
 The sensor is not suitable for CO2 heavy "industrial" environments. 
 
-The temperature range the sensor can measure is: **TODO UNKNOWN YET**
+**Warning** The temperature range the sensor can measure is **UNKNOWN**
+as there is no documentation how to convert the raw data to meaningfull one.
 
 
 #### Pre-heat period
