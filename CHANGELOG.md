@@ -6,8 +6,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
-## [0.1.x] 
+## [0.1.2] - 2023-11-23
 - add temperature disclaimer in readme.md.
+- update keywords.txt
+- minor edits
 
 
 ## [0.1.1] - 2023-10-05
