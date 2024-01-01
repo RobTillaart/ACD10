@@ -26,5 +26,4 @@ compile:
     # - mega2560
     - rpipico
   libraries:
-    - "AM232X"
     - "TCA9548"
